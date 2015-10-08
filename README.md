@@ -1,15 +1,15 @@
-## sample-kinesis-connector
+## gnip-kinesis-connector
 
-A sample application that consumes from Twitter enterprise streams using HBC and produces messages into Amazon Kinesis
+An application that consumes from Twitter enterprise streams from Gnip using HBC and produces messages into Amazon Kinesis
 
 ## Requirements
 * Java 1.7
 * Maven
 
 ## Getting Started
-This is an example app that takes in a Gnip Power Track and streams it into [AWS Kinesis](http://aws.amazon.com/kinesis/). This application can be deployed as is with a few edits to the configuration file:
+This is an app that takes in a Gnip Power Track and streams it into [AWS Kinesis](http://aws.amazon.com/kinesis/). This application can be deployed as is with a few edits to the configuration file:
 
-  1. Clone the project: ```git clone https://github.com/twitterdev/sample-kinesis-connector sample-kinesis-connector && cd ~/sample-kinesis-connector```
+  1. Clone the project: ```git clone https://github.com/mashable/gnip-kinesis-connector.git gnip-kinesis-connector && cd gnip-kinesis-connector```
   2. Create a config.properties file in src/main/resources: ```cd src/main/resources && mv config.properties.example config.properties```
   3. Edit the newly created file to contain your information: ```vim config.properteis```
   </br>
@@ -23,7 +23,13 @@ This is an example app that takes in a Gnip Power Track and streams it into [AWS
 
     aws.access.key=YOUR_AWS_ACCESS_LEY
     aws.secret.key=YOUR_AWS_SECRET_ACCEES_KEY
-    aws.kinesis.stream.name=YOUR_DESIRED_KINESIS_STREAM_LABEL
+    aws.kinesis.stream.region=YOUR_DESIRED_KINESIS_STREAM_REGION
+    aws.kinesis.stream.name=YOUR_DESIRED_KINESIS_STREAM_NAME
+
+    #statsd
+    statsd.prefix=STATSD_PREFIX
+    statsd.host=STATSD_HOST
+    statsd.port=STATSD_PORT
 
     #Application configuration parameters-
     ########################
@@ -38,7 +44,7 @@ This is an example app that takes in a Gnip Power Track and streams it into [AWS
     rate.limit=-1
     metric.report.interval.seconds=60
   ```
-  4. Build the project with Maven: ```cd ~/sample-kinesis-connector && mvn clean install```
+  4. Build the project with Maven: ```cd gnip-kinesis-connector && mvn clean package```
   5. Run the project with: ```java -jar target/connector-<version_no>-jar-with-dependencies.jar```
 
 ## Notes
