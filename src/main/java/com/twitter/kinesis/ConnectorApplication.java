@@ -3,6 +3,7 @@ package com.twitter.kinesis;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kinesis.AmazonKinesisClient;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
@@ -57,9 +58,11 @@ public class ConnectorApplication {
             .processor(new LineStringProcessor(downstream))
             .build();
 
+    AmazonKinesisClient kinesisClient = new AmazonKinesisClient(credentialsProvider);
+    kinesisClient.withRegion(Regions.fromName(this.environment.kinesisStreamRegion()));
     new KinesisProducer.Builder()
             .environment(this.environment)
-            .kinesisClient(new AmazonKinesisClient(credentialsProvider))
+            .kinesisClient(kinesisClient)
             .shardCount(this.environment.shardCount())
             .streamName(this.environment.kinesisStreamName())
             .upstream(downstream)

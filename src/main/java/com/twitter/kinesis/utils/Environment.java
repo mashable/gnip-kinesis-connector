@@ -79,6 +79,10 @@ public class Environment implements AWSCredentialsProvider {
     return props.getProperty("aws.kinesis.stream.name");
   }
 
+  public String kinesisStreamRegion() {
+    return props.getProperty("aws.kinesis.stream.region");
+  }
+
   public int shardCount() {
     return Integer.parseInt(props.getProperty("aws.kinesis.shard.count"));
   }
