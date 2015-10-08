@@ -3,6 +3,7 @@ package com.twitter.kinesis;
 import com.amazonaws.services.kinesis.model.ProvisionedThroughputExceededException;
 import com.amazonaws.services.kinesis.AmazonKinesisClient;
 import com.amazonaws.services.kinesis.model.*;
+import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.twitter.kinesis.metrics.ShardMetric;
 import com.twitter.kinesis.metrics.SimpleMetric;
@@ -99,7 +100,7 @@ public class KinesisProducer implements Runnable {
     while (!Thread.interrupted()) {
       try {
         String message = upstream.take();
-        sendMessage(message.getBytes());
+        sendMessage(message.getBytes(Charsets.UTF_8));
       } catch (InterruptedException e) {
         logger.warn("Thread Interrupted");
       }
