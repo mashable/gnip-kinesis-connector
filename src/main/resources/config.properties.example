@@ -8,8 +8,13 @@ gnip.stream.label=YOUR_GNIP_STREAM_LABEL
 #AWS Account Information
 aws.access.key=YOUR_AWS_ACCESS_KEY
 aws.secret.key=YOUR_SECRET_AWS_KEY
+aws.kinesis.stream.region=YOUR_DESIRED_KINESIS_STREAM_REGION
 aws.kinesis.stream.name=YOUR_DESIRED_KINESIS_STREAM_NAME
 
+#statsd
+statsd.prefix=STATSD_PREFIX
+statsd.host=STATSD_HOST
+statsd.port=STATSD_PORT
 
 #Application configuration parameters-
 ########################

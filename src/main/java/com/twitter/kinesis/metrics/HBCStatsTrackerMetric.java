@@ -1,11 +1,12 @@
 package com.twitter.kinesis.metrics;
 import com.twitter.hbc.core.StatsReporter;
+import com.timgroup.statsd.StatsDClient;
 
 public class HBCStatsTrackerMetric implements SimpleMetric {
 
   private final StatsReporter.StatsTracker statsTracker;
   private double mostRecentMessageCount;
-
+  
   public HBCStatsTrackerMetric(StatsReporter.StatsTracker statsTracker) {
     this.statsTracker = statsTracker;
   }
@@ -25,6 +26,11 @@ public class HBCStatsTrackerMetric implements SimpleMetric {
     return "HBC Messages Processed ";
   }
 
+  @Override 
+  public String getShortName() {
+    return "hbc_messages";
+  }
+
   public String toString() {
     String fmtString;
     double sample = getLastPeriodCountAndReset();
@@ -34,6 +40,16 @@ public class HBCStatsTrackerMetric implements SimpleMetric {
       fmtString = String.format("%s : %4.0f", getName(), sample);
     }
     return fmtString;
+  }
+
+  @Override
+  public void recordStats(StatsDClient statsd) {
+    if (statsd != null) {
+      double sample = getLastPeriodCountAndReset();    
+      if (!Double.isNaN(sample)) {
+        statsd.gauge(String.format("%s.processed", getShortName()), sample);
+      }
+    }
   }
 
   // Return the count for the last period

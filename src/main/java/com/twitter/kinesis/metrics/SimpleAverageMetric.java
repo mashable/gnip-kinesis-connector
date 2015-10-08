@@ -1,12 +1,16 @@
 package com.twitter.kinesis.metrics;
 
+import com.timgroup.statsd.StatsDClient;
+
 public class SimpleAverageMetric implements SimpleMetric {
     private long count;
     private long sample;
     private String name;
+    private String shortName;
 
-    SimpleAverageMetric(String name){
+    SimpleAverageMetric(String name, String shortName){
         this.name = name;
+        this.shortName = shortName;
     }
 
     @Override
@@ -33,7 +37,18 @@ public class SimpleAverageMetric implements SimpleMetric {
         return String.format("%s : %,.3f", name, this.getAvg());
     }
 
+    @Override
+    public void recordStats(StatsDClient statsd) {
+        if (statsd != null) {
+            statsd.gauge(getShortName(), this.getAvg());
+        }
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getShortName() {
+        return shortName;
     }
 }

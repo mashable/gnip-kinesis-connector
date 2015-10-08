@@ -91,6 +91,18 @@ public class Environment implements AWSCredentialsProvider {
     return Integer.parseInt(props.getProperty("message.queue.size"));
   }
 
+  public String getStatsdPrefix() {
+    return props.getProperty("statsd.prefix", "");
+  }
+
+  public String getStatsdHost() {
+    return props.getProperty("statsd.host");
+  }
+
+  public int getStatsdPort() {
+    return Integer.parseInt(props.getProperty("statsd.port", "8125"));
+  }
+
   @Override
   public AWSCredentials getCredentials() {
     AWSCredentials credentials = new AWSCredentials() {

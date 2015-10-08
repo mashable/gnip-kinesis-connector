@@ -39,10 +39,10 @@ public class KinesisProducer implements Runnable {
     this.upstream = upstream;
     this.kinesisStreamName = kinesisStreamName;
     this.shardMetric = shardMetric;
-    avgPutTime = metrics.newSimpleMetric("Average Time to Write to Kinesis(ms)");
-    batchSize = metrics.newSimpleMetric("Average Message Size to Kinesis (bytes)");
-    successCount = metrics.newSimpleCountMetric("Successful writes to Kinesis");
-    droppedMessageCount = metrics.newSimpleCountMetric("Failed writes to Kinesis");
+    avgPutTime = metrics.newSimpleMetric("Average Time to Write to Kinesis(ms)", "kinesis_update_time");
+    batchSize = metrics.newSimpleMetric("Average Message Size to Kinesis (bytes)", "kinesis_msg_size");
+    successCount = metrics.newSimpleCountMetric("Successful writes to Kinesis", "kinesis_writes");
+    droppedMessageCount = metrics.newSimpleCountMetric("Failed writes to Kinesis", "kinesis_failed_writes");
     kinesisClient = client;
   }
 

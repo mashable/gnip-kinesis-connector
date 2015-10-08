@@ -3,6 +3,7 @@ package com.twitter.kinesis.metrics;
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
+import com.timgroup.statsd.StatsDClient;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -23,13 +24,18 @@ public class ShardMetricLogging implements ShardMetric {
     public String toString() {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        pw.println ("Shard Distributuion: ");
+        pw.println ("Shard Distribution: ");
         pw.println ("====================");
         for (String key : shardCounter.elementSet()) {
             pw.printf("\t%s : %d\n", key, shardCounter.count(key));
         }
         pw.close();
         return sw.toString();
+    }
+
+    @Override
+    public void recordStats(StatsDClient statsd) {
+        //noop
     }
 
     @Override
@@ -45,5 +51,10 @@ public class ShardMetricLogging implements ShardMetric {
     @Override
     public String getName() {
         return "Shard Distribution";
+    }
+
+    @Override
+    public String getShortName() {
+        return "kinesis.shard";
     }
 }

@@ -5,6 +5,8 @@ import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kinesis.AmazonKinesisClient;
+import com.timgroup.statsd.StatsDClient;
+import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -44,10 +46,16 @@ public class ConnectorApplication {
   }
 
   private void configure() {
-    this.simpleMetricManager = new SimpleMetricManager();
     this.environment.configure();
+    StatsDClient statsd = null;
+    if (this.environment.getStatsdHost() != null) {
+      statsd = new NonBlockingStatsDClient(this.environment.getStatsdPrefix(), this.environment.getStatsdHost(), 
+        this.environment.getStatsdPort());
+    }
+    this.simpleMetricManager = new SimpleMetricManager(statsd);
     LinkedBlockingQueue<String> downstream = new LinkedBlockingQueue<String>(10000);
     ShardMetricLogging shardMetric = new ShardMetricLogging();
+    this.simpleMetricManager.registerMetric(shardMetric);
     AWSCredentialsProvider credentialsProvider = new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(), this.environment);
 
     this.client = new ClientBuilder()
