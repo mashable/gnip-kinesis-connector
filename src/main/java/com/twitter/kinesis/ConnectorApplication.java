@@ -38,6 +38,7 @@ public class ConnectorApplication {
   private SimpleMetricManager simpleMetricManager;
   private Date replayFrom;
   private Date replayTo;
+  private String configFile;
 
   public ConnectorApplication() {
     environment = new Environment();
@@ -58,6 +59,9 @@ public class ConnectorApplication {
       if (cmdLine.hasOption("f") && cmdLine.hasOption("t")) {
         application.setReplayDates(cmdLine.getOptionValue("f"), cmdLine.getOptionValue("t"));
       }
+      if (cmdLine.hasOption("c")) {
+        application.setConfigFile(cmdLine.getOptionValue("c"));
+      }
 
       application.start();
     } catch (Exception e) {
@@ -70,6 +74,7 @@ public class ConnectorApplication {
     options.addOption(Option.builder("h").argName("help").hasArg(false).desc("Help").build());
     options.addOption(Option.builder("f").argName("from").hasArg().desc("Replay from (iso8601 date)").type(Date.class).build());
     options.addOption(Option.builder("t").argName("to").hasArg().desc("Replay to (iso8601 date)").type(Date.class).build());
+    options.addOption(Option.builder("c").argName("file").hasArg().desc("Config property file").type(String.class).build());
     return options;
   }
 
@@ -78,8 +83,12 @@ public class ConnectorApplication {
     this.replayTo = new LocalDateTime(new DateTime(to).toDate(), DateTimeZone.UTC).toDate();
   }
 
+  private void setConfigFile(String file) {
+    this.configFile = file;
+  }
+
   private void configure() {
-    this.environment.configure();
+    this.environment.configure(this.configFile);
     StatsDClient statsd = null;
     if (this.environment.getStatsdHost() != null) {
       statsd = new NonBlockingStatsDClient(this.environment.getStatsdPrefix(), this.environment.getStatsdHost(), 

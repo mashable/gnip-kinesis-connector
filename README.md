@@ -47,5 +47,15 @@ This is an app that takes in a Gnip Power Track and streams it into [AWS Kinesis
   4. Build the project with Maven: ```cd gnip-kinesis-connector && mvn clean package```
   5. Run the project with: ```java -jar target/connector-<version_no>-jar-with-dependencies.jar```
 
+### Run Options
+
+ * Replay Mode
+
+   Provide ```-f <from date> -t <to date>``` arguments to connect to replay stream instead of the real time stream. From and to date inputs need to be in ISO8601 format
+
+ * External Config File
+
+   Provide ```-c <path to config file>``` argument instead of relying on config.properties in jar file 
+
 ## Notes
 This sample has been tested on [Digital Ocean](https://www.digitalocean.com/) box with 1 Gb RAM. The ability for the application to produce to Kinesis is very sensitive to the quality the network connection. In testing, we were able to get a Gnip Decahose to flow quite well, only hitting the Kinesis rate limit a few times, all of which were recoverable errors.

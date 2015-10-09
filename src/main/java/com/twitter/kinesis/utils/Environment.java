@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.TreeSet;
@@ -14,10 +15,15 @@ public class Environment implements AWSCredentialsProvider {
   private static final Logger logger = LoggerFactory.getLogger(Environment.class);
   private static Properties props;
 
-  public void configure() {
+  public void configure(String configFile) {
     try {
       logger.info("loading properties from classpath");
-      InputStream properties = Environment.class.getClassLoader().getResourceAsStream("config.properties");
+      InputStream properties = null;
+      if (configFile != null) {
+        properties = new FileInputStream(configFile);
+      } else {
+        properties = Environment.class.getClassLoader().getResourceAsStream("config.properties");
+      }
       props = new Properties();
       props.load(properties);
       logProperties();
