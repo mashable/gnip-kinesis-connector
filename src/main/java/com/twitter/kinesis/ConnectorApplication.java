@@ -109,6 +109,8 @@ public class ConnectorApplication {
             .upstream(downstream)
             .simpleMetricManager(this.simpleMetricManager)
             .shardMetric(shardMetric)
+            .gnipClient(this.client)
+            .replayMode(this.replayFrom != null && this.replayTo != null)
             .buildAndStart();
 
     configureHBCStatsTrackerMetric();

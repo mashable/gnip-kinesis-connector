@@ -5,6 +5,7 @@ import com.amazonaws.services.kinesis.AmazonKinesisClient;
 import com.amazonaws.services.kinesis.model.*;
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.twitter.hbc.core.Client;
 import com.twitter.kinesis.metrics.ShardMetric;
 import com.twitter.kinesis.metrics.SimpleMetric;
 import com.twitter.kinesis.metrics.SimpleMetricManager;
@@ -24,11 +25,14 @@ public class KinesisProducer implements Runnable {
   private final Random rnd = new Random();
   private final Logger logger = LoggerFactory.getLogger(Environment.class);
   private final BlockingQueue<String> upstream;
+  private SimpleMetricManager metricManager;
   private ShardMetric shardMetric;
   private SimpleMetric avgPutTime;
   private SimpleMetric batchSize;
   private SimpleMetric successCount;
   private SimpleMetric droppedMessageCount;
+  private boolean replayMode;
+  private Client gnipClient;
 
   public KinesisProducer(
           BlockingQueue<String> upstream,
@@ -36,15 +40,20 @@ public class KinesisProducer implements Runnable {
           SimpleMetricManager metrics,
           AmazonKinesisClient client,
           String kinesisStreamName,
-          ShardMetric shardMetric) {
+          ShardMetric shardMetric,
+          Client gnipClient,
+          boolean replayMode) {
     this.upstream = upstream;
     this.kinesisStreamName = kinesisStreamName;
     this.shardMetric = shardMetric;
+    this.metricManager = metrics;
     avgPutTime = metrics.newSimpleMetric("Average Time to Write to Kinesis(ms)", "kinesis_update_time");
     batchSize = metrics.newSimpleMetric("Average Message Size to Kinesis (bytes)", "kinesis_msg_size");
     successCount = metrics.newSimpleCountMetric("Successful writes to Kinesis", "kinesis_writes");
     droppedMessageCount = metrics.newSimpleCountMetric("Failed writes to Kinesis", "kinesis_failed_writes");
     kinesisClient = client;
+    this.gnipClient = gnipClient;
+    this.replayMode = replayMode;
   }
 
   private void sendMessage(final byte[] bytes) {
@@ -100,6 +109,16 @@ public class KinesisProducer implements Runnable {
     while (!Thread.interrupted()) {
       try {
         String message = upstream.take();
+        if (replayMode) {
+          if (message.contains("Replay Request Completed")) {
+            logger.info(String.format("replay complete message received: %s", message));
+            upstream.clear();
+            this.gnipClient.stop();
+            this.metricManager.report();
+            logger.info("Replay Completed.");
+            break;
+          } 
+        }
         sendMessage(message.getBytes(Charsets.UTF_8));
       } catch (InterruptedException e) {
         logger.warn("Thread Interrupted");
@@ -118,6 +137,8 @@ public class KinesisProducer implements Runnable {
     private String kinesisStreamName;
     private Environment environment;
     private int shardCount;
+    private Client gnipClient;
+    private boolean replayMode = false;
 
     public Builder kinesisClient(AmazonKinesisClient client) {
       this.kinesisClient = client;
@@ -151,6 +172,16 @@ public class KinesisProducer implements Runnable {
 
     public Builder shardMetric(ShardMetric shardMetric) {
       this.shardMetric = shardMetric;
+      return this;
+    }
+
+    public Builder gnipClient(Client gnipClient) {
+      this.gnipClient = gnipClient;
+      return this;
+    }
+
+    public Builder replayMode(boolean replayMode) {
+      this.replayMode = replayMode;
       return this;
     }
 
@@ -194,7 +225,9 @@ public class KinesisProducer implements Runnable {
                 this.metricManager,
                 this.kinesisClient,
                 this.kinesisStreamName,
-                this.shardMetric
+                this.shardMetric,
+                this.gnipClient,
+                this.replayMode
         );
         Executors.newSingleThreadExecutor(threadFactory).execute(producer);
       }
