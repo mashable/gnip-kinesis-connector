@@ -147,8 +147,11 @@ public class ConnectorApplication {
     String account = this.environment.accountName();
     String label = this.environment.streamLabel();
     String product = this.environment.product();
+    String clientId = this.environment.clientId();
     if (this.replayFrom != null && this.replayTo != null) {
       return new ReplayEnterpriseStreamingEndpoint(account, product, label, this.replayFrom, this.replayTo);
+    } else if (clientId != null) {
+      return new RealTimeEnterpriseStreamingEndpoint(account, product, label, Integer.parseInt(clientId));
     } else {
       return new RealTimeEnterpriseStreamingEndpoint(account, product, label);
     }
