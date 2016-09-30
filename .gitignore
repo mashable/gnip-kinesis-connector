@@ -2,6 +2,8 @@
 *.swp
 .idea
 config.properties
+partition1.properties
+partition2.properties
 logs/
 target/
 .DS_Store

@@ -1,12 +1,13 @@
 ## gnip-kinesis-connector
 
-An application that consumes from Twitter enterprise streams from Gnip using HBC and produces messages into Amazon Kinesis
+An application that consumes from Twitter enterprise streams from Gnip V2 using HBC and produces messages into Amazon Kinesis
 
 ## Requirements
 * Java 1.7
 * Maven
 
 ## Getting Started
+
 This is an app that takes in a Gnip Power Track and streams it into [AWS Kinesis](http://aws.amazon.com/kinesis/). This application can be deployed as is with a few edits to the configuration file:
 
   1. Clone the project: ```git clone https://github.com/mashable/gnip-kinesis-connector.git gnip-kinesis-connector && cd gnip-kinesis-connector```
@@ -20,6 +21,8 @@ This is an app that takes in a Gnip Power Track and streams it into [AWS Kinesis
     gnip.account.name=YOUR_GNIP_ACCOUNT_NAME
     gnip.product=YOUR_GNIP_PRODUCT
     gnip.stream.label=YOUR_GNIP_STREAM_LABEL
+    gnip.partition=GNIP_STREAM_PARTITION
+    gnip.backfillMinutes=GNIP_BACKFILL_MINUTES
 
     aws.access.key=YOUR_AWS_ACCESS_LEY
     aws.secret.key=YOUR_AWS_SECRET_ACCEES_KEY
@@ -44,8 +47,10 @@ This is an app that takes in a Gnip Power Track and streams it into [AWS Kinesis
     rate.limit=-1
     metric.report.interval.seconds=60
   ```
-  4. Build the project with Maven: ```cd gnip-kinesis-connector && mvn clean package```
-  5. Run the project with: ```java -jar target/connector-<version_no>-jar-with-dependencies.jar```
+  4. Clone the Gnip V2 Horsebird client project - ```git clone https://github.com/mashable/hbc.git && cd hbc```
+  5. Install Horsebird client locally - ```mvn clean install```
+  6. Build this project with Maven: ```cd gnip-kinesis-connector && mvn clean package```
+  7. Run the project with: ```java -jar target/connector-2.0-jar-with-dependencies.jar```
 
 ### Run Options
 
