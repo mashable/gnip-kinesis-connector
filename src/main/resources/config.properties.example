@@ -4,9 +4,8 @@ gnip.user.password=YOUR_GNIP_PASSWORD
 gnip.account.name=YOUR_GNPI_ACCOUNT_NAME
 gnip.product=YOUR_GNIP_PRODUCT
 gnip.stream.label=YOUR_GNIP_STREAM_LABEL
-
-#Set Gnip client id to enable backfill
-gnip.client.id=YOUR_GNIP_CLIENT_ID
+gnip.partition=GNIP_STREAM_PARTITION
+gnip.backfillMinutes=GNIP_BACKFILLMINS
 
 #AWS Account Information
 aws.access.key=YOUR_AWS_ACCESS_KEY

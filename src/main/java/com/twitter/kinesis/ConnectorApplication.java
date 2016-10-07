@@ -50,7 +50,7 @@ public class ConnectorApplication {
       CommandLine cmdLine = new DefaultParser().parse(options, args);
       if (cmdLine.hasOption("h")) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp( "java target/connector-1.0-jar-with-dependencies.jar", options);
+        formatter.printHelp( "java target/connector-2.0-jar-with-dependencies.jar", options);
         System.exit(0);
       }
 
